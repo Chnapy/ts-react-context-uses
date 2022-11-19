@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+
+      - name: Check - Yarn dedupe
+        run: yarn dedupe -c
+
+      - name: Check - Lint
+        run: yarn c:lint
+
+      - name: Check - Type
+        run: yarn c:type
+
+      - name: Check - Tests
+        run: yarn c:test
+
+      - name: Build
+        run: yarn build
+
+      - name: Check - Example type
+        run: yarn c:type ./example

@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "composite": true,
+    "tsBuildInfoFile": "./node_modules/.cache/.tsbuildinfo",
+    "outDir": "./node_modules/.cache/dist",
+    "moduleResolution": "node",
+    "plugins": [
+      {
+        "name": "ts-react-context-uses"
+      }
+    ]
+  },
+  "include": ["."]
+}

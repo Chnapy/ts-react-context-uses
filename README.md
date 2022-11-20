@@ -6,23 +6,46 @@
 
 TODO
 
--- react-context-uses => check l'utilisation d'un context, si à l'interieur de son provider --
+---
 
-- parcours d'AST
-	- choix de la techno: TS (besoin typage)
+-- ts-react-context-uses - CLI tool - check l'utilisation d'un context, si à l'interieur de son provider --
 
-- repérer les utilisation de React.useContext(X) et <X.Consumer>, vérifier leur présence dans <X.Provider>
-- si condition non respectée, afficher les fichiers & lignes défaillantes + afficher erreur
-- utilisable en CLI
-- intégration éditeur
+--
 
------
-
--- TS language-service - react-context-uses
-
+- CLI use only
 - context provider & hook can be imported from external modules, only type is accessible
-- check TS AST then report error (warning ?) diagnostic
-- context items should be created with identifiers
-	- type ContextHook<H> = H & { _tsUses?: 'ProductContext'; };
-	- type ContextProvider<P> = P & { _tsUses?: 'ProductContext'; };
-  
+
+--
+
+<!-- - définition typage & utils runtime-dev: traced-hook / traced-provider
+  - `type TracedContextHook<H> = H & { _tsUses?: 'ProductContext'; };`
+  - `type TracedContextProvider<P> = P & { _tsUses?: 'ProductContext'; };` -->
+
+- generation ast multi-files
+- parcours code via function calls or jsx render
+  - accès imports packages monorepo
+  - note des `<X.Provider>`
+  - en cas de `useContext(X)` check la présence de `<X.Provider>`
+    - else show last `<Component>` render file & line infos
+
+---
+
+-- tests
+
+- ast
+  - valid: calls & jsx-render tree
+  - valid: file imports
+  - valid: package imports
+- single-file
+  - valid: no useContext nor <X.Provider>
+  - valid: only <X.Provider>
+  - valid: useContext(X) inside <X.Provider>
+  - valid: React.useContext(X) inside <X.Provider>
+  - invalid: useContext(X) without provider
+  - valid: useContext(X) inside useX() inside <X.Provider> inside <XProvider>
+  - invalid: useContext(X) inside useX() without provider
+  - invalid: custom function useContext(X) inside <X.Provider>
+- multiple-files
+  - valid: (file1) useContext(X) inside useX() inside (file2) <X.Provider> inside <XProvider>
+- monorepo
+  - valid: (p1) useContext(X) inside useX() inside (p2) <X.Provider> inside <XProvider>

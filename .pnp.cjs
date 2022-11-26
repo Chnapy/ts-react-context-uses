@@ -45,6 +45,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-import", "virtual:d9eec67abd00b05836adb000f12fa78c268e042945f9924404114243b46d8772ea66e0c8c0f32756dd487c84155793e26f7370063813fcd04f22ab1c642c8ac9#npm:2.26.0"],\
             ["eslint-plugin-prettier", "virtual:d9eec67abd00b05836adb000f12fa78c268e042945f9924404114243b46d8772ea66e0c8c0f32756dd487c84155793e26f7370063813fcd04f22ab1c642c8ac9#npm:4.2.1"],\
             ["eslint-plugin-unicorn", "virtual:d9eec67abd00b05836adb000f12fa78c268e042945f9924404114243b46d8772ea66e0c8c0f32756dd487c84155793e26f7370063813fcd04f22ab1c642c8ac9#npm:44.0.2"],\
+            ["foobar", "link:./extra::locator=ts-react-context-uses%40workspace%3A."],\
             ["jest", "virtual:d9eec67abd00b05836adb000f12fa78c268e042945f9924404114243b46d8772ea66e0c8c0f32756dd487c84155793e26f7370063813fcd04f22ab1c642c8ac9#npm:29.3.1"],\
             ["prettier", "npm:2.7.1"],\
             ["react", "npm:18.2.0"],\
@@ -5161,6 +5162,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "HARD"\
         }]\
       ]],\
+      ["foobar", [\
+        ["link:./extra::locator=ts-react-context-uses%40workspace%3A.", {\
+          "packageLocation": "./extra/",\
+          "packageDependencies": [\
+            ["foobar", "link:./extra::locator=ts-react-context-uses%40workspace%3A."]\
+          ],\
+          "linkType": "SOFT",\
+          "discardFromLookup": true\
+        }]\
+      ]],\
       ["fs-minipass", [\
         ["npm:2.1.0", {\
           "packageLocation": "./.yarn/cache/fs-minipass-npm-2.1.0-501ef87306-1b8d128dae.zip/node_modules/fs-minipass/",\
@@ -8126,6 +8137,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eslint-plugin-import", "virtual:d9eec67abd00b05836adb000f12fa78c268e042945f9924404114243b46d8772ea66e0c8c0f32756dd487c84155793e26f7370063813fcd04f22ab1c642c8ac9#npm:2.26.0"],\
             ["eslint-plugin-prettier", "virtual:d9eec67abd00b05836adb000f12fa78c268e042945f9924404114243b46d8772ea66e0c8c0f32756dd487c84155793e26f7370063813fcd04f22ab1c642c8ac9#npm:4.2.1"],\
             ["eslint-plugin-unicorn", "virtual:d9eec67abd00b05836adb000f12fa78c268e042945f9924404114243b46d8772ea66e0c8c0f32756dd487c84155793e26f7370063813fcd04f22ab1c642c8ac9#npm:44.0.2"],\
+            ["foobar", "link:./extra::locator=ts-react-context-uses%40workspace%3A."],\
             ["jest", "virtual:d9eec67abd00b05836adb000f12fa78c268e042945f9924404114243b46d8772ea66e0c8c0f32756dd487c84155793e26f7370063813fcd04f22ab1c642c8ac9#npm:29.3.1"],\
             ["prettier", "npm:2.7.1"],\
             ["react", "npm:18.2.0"],\

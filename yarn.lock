@@ -3395,6 +3395,12 @@ __metadata:
   languageName: node
   linkType: hard
 
+"foobar@link:./extra::locator=ts-react-context-uses%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "foobar@link:./extra::locator=ts-react-context-uses%40workspace%3A."
+  languageName: node
+  linkType: soft
+
 "fs-minipass@npm:^2.0.0, fs-minipass@npm:^2.1.0":
   version: 2.1.0
   resolution: "fs-minipass@npm:2.1.0"
@@ -5998,6 +6004,7 @@ __metadata:
     eslint-plugin-import: 2.26.0
     eslint-plugin-prettier: 4.2.1
     eslint-plugin-unicorn: 44.0.2
+    foobar: "link:./extra"
     jest: 29.3.1
     prettier: 2.7.1
     react: 18.2.0

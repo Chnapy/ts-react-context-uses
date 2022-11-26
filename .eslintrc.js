@@ -177,6 +177,7 @@ const config = {
         'unicorn/no-array-callback-reference': 'off',
         'unicorn/no-array-reduce': 'off',
         'unicorn/no-abusive-eslint-disable': 'off',
+        'unicorn/consistent-function-scoping': 'off',
       }),
     },
   ],

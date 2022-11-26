@@ -14,14 +14,10 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "downlevelIteration": true,
+    "composite": true,
 
     "module": "commonjs",
     "lib": ["ESNext", "dom"]
   },
-  "include": ["./calls-jsx-tree.tsx"],
-  "references": [
-    {
-      "path": "../../../extra"
-    }
-  ]
+  "include": ["./index.ts"]
 }

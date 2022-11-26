@@ -1,9 +1,17 @@
-import React, { useEffect } from 'react';
+/* eslint-disable */
+import React, { useContext, useEffect } from 'react';
+import * as Foo from 'react';
+import { goo } from './foo';
+import { extra } from 'foobar';
 
 const useAction = () => {
   useSecond();
   return 3;
 };
+
+const FooContext = React.createContext(-1);
+
+const FooProvider = FooContext.Provider;
 
 export const App: React.FC = () => {
   const [foo] = React.useState(12);
@@ -18,21 +26,26 @@ export const App: React.FC = () => {
 
   return (
     <div>
-      <h1>Toto {bar}</h1>
-      <main>
-        {foo}
-        <Parent>
+      <FooProvider value={1}>
+        <h1>Toto {bar}</h1>
+        <main>
+          {foo}
           <Parent>
-            <Child />
+            <Parent>
+              <Child />
+            </Parent>
           </Parent>
-        </Parent>
 
-        {child}
-        {childFn()}
-      </main>
+          {child}
+        </main>
+      </FooProvider>
+      {childFn()}
     </div>
   );
 };
+
+const useFoo = () => React.useContext(FooContext);
+const useFoo2 = () => useContext(FooContext);
 
 const useSecond = () => 12;
 
@@ -42,6 +55,14 @@ const Parent: React.FC<React.PropsWithChildren> = ({ children }) => (
 
 const Child: React.FC = () => {
   const value = useSecond();
+  const foo = useFoo();
+  const foo2 = useFoo2();
 
-  return <span>{value}</span>;
+  return (
+    <span>
+      {value}
+      {foo}
+      {foo2}
+    </span>
+  );
 };

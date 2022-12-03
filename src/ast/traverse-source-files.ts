@@ -13,7 +13,7 @@ const traverseNode: TraverseFn<Node> = (node, treeContext) => {
 
 export const traverseSourceFiles = (
   sourceFiles: SourceFile[],
-  project: TreeContext['project']
+  getSourceFile: TreeContext['getSourceFile']
 ) => {
   const mainTree: CallRenderTree = { type: 'tree', body: {} };
 
@@ -21,7 +21,7 @@ export const traverseSourceFiles = (
     currentNode: mainTree,
     jsxContext: { jsxHistory: [] },
     tree: mainTree,
-    project,
+    getSourceFile,
     traverseNode,
   };
 

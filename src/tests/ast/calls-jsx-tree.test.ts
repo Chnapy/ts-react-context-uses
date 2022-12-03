@@ -1,3 +1,4 @@
+import { loadProjectFromPath } from './../../ast/load-project-from-path';
 import path from 'node:path';
 import { Project, SourceFile } from 'ts-morph';
 import { CallRenderTree, EveryNode } from './../../ast/traverse-fn';
@@ -5,13 +6,32 @@ import { traverseSourceFiles } from './../../ast/traverse-source-files';
 
 describe('calls & jsx tree', () => {
   it('foo', () => {
-    const project = new Project({
+    const mainProject = new Project({
       tsConfigFilePath: path.join(__dirname, 'tsconfig.json'),
     });
 
-    const sfs = project.getSourceFiles();
+    const projects = [mainProject];
 
-    const mainTree = traverseSourceFiles(sfs, project);
+    const sfs = mainProject.getSourceFiles();
+
+    const getSourceFile = (filePath: string) => {
+      for (const project of projects) {
+        const sf = project.getSourceFile(filePath);
+        if (sf) {
+          console.log('P1', filePath);
+          return sf;
+        }
+      }
+
+      const newProject = loadProjectFromPath(filePath);
+      if (newProject) {
+        projects.push(newProject);
+        console.log('P2', filePath);
+        return newProject.getSourceFile(filePath);
+      }
+    };
+
+    const mainTree = traverseSourceFiles(sfs, getSourceFile);
 
     console.log(
       JSON.stringify(
@@ -42,28 +62,28 @@ describe('calls & jsx tree', () => {
               type: 'import',
               importType: 'default',
               module: 'react',
-              filePath: expect.stringContaining('/react/index.js'),
+              filePath: undefined,
             },
             useContext: {
               name: 'useContext',
               type: 'import',
               importType: 'named',
               module: 'react',
-              filePath: expect.stringContaining('/react/index.js'),
+              filePath: undefined,
             },
             useEffect: {
               name: 'useEffect',
               type: 'import',
               importType: 'named',
               module: 'react',
-              filePath: expect.stringContaining('/react/index.js'),
+              filePath: undefined,
             },
             Foo: {
               name: 'Foo',
               type: 'import',
               importType: 'namespace',
               module: 'react',
-              filePath: expect.stringContaining('/react/index.js'),
+              filePath: undefined,
             },
             goo: {
               name: 'goo',
@@ -72,8 +92,8 @@ describe('calls & jsx tree', () => {
               module: './foo',
               filePath: `${__dirname}/foo.tsx`,
             },
-            extra: {
-              name: 'extra',
+            useExtra: {
+              name: 'useExtra',
               type: 'import',
               importType: 'named',
               module: 'foobar',
@@ -268,7 +288,7 @@ describe('calls & jsx tree', () => {
                   render: [],
                 },
               },
-              calls: [],
+              calls: ['useExtra'],
               render: [
                 {
                   type: 'jsx-expression',
@@ -305,6 +325,21 @@ describe('calls & jsx tree', () => {
             },
           },
         },
+        '/home/chnapy/projects/eslint-plugin-react-context-uses/extra/index.ts':
+          {
+            name: '/home/chnapy/projects/eslint-plugin-react-context-uses/extra/index.ts',
+            type: 'file',
+            declarations: {
+              useExtra: {
+                name: 'useExtra',
+                type: 'fn',
+                hook: true,
+                calls: [],
+                declarations: {},
+                render: [],
+              },
+            },
+          },
       },
     };
 
@@ -325,12 +360,24 @@ describe('calls & jsx tree', () => {
     ): EveryNode | undefined => {
       const { rawNode, parents } = graphNode;
 
+      if (nameSearching.includes('.')) {
+        console.log(
+          'TOTOTO',
+          nameSearching,
+          graphNode.rawNode.type,
+          findDeclaration(graphNode, nameSearching.split('.')[0])
+        );
+        if (findDeclaration(graphNode, nameSearching.split('.')[0])) {
+          return findDeclaration(graphNode, nameSearching.split('.')[0]);
+        }
+      }
+
       const foundNode =
         'declarations' in rawNode && rawNode.declarations[nameSearching];
       if (foundNode) {
-        if (nameSearching === 'Child') {
+        if (nameSearching === 'useContext') {
           // console.log('ENDUP HERE');
-          console.log('FOUND', nameSearching, foundNode);
+          // console.log('FOUND', nameSearching, foundNode);
         }
         // console.log('FOUND', nameSearching, foundNode);
         return foundNode;
@@ -355,6 +402,9 @@ describe('calls & jsx tree', () => {
       if (newParent) {
         graphNode.parents.add(newParent);
         newParent.children.add(graphNode);
+        // if (node.type === 'import' && node.name === 'useContext') {
+        //   console.log('BABABA', newParent);
+        // }
       }
       // if (toto.has(node)) {
       //   console.log('ALREADY HAS', node.name);
@@ -389,6 +439,9 @@ describe('calls & jsx tree', () => {
             const callNode = findDeclaration(graphNode, callStr);
             if (callNode) {
               traverse(callNode, graphNode);
+              // if (callNode.name === 'useContext') {
+              //   console.log('FOFOFOFO', callNode.type, graphNode.children);
+              // }
               // graphNode.children.add(callNode);
             }
           });
@@ -432,6 +485,11 @@ describe('calls & jsx tree', () => {
           break;
         }
         case 'import': {
+          const referencedFile = node.filePath && mainTree.body[node.filePath];
+          if (referencedFile) {
+            traverse(referencedFile, graphNode);
+          }
+
           break;
         }
       }
@@ -442,30 +500,64 @@ describe('calls & jsx tree', () => {
     const mainGraphNode = toto.get(mainTree)!;
 
     // console.log(mainGraphNode);
-    const getNodeName = (node: EveryNode) =>
-      `${'name' in node ? node.name : '-'} [${node.type}]`;
 
-    const paths: string[] = [];
+    // const paths: string[] = [];
+    const graphPathList: GraphNode[][] = [];
 
-    const tooto = (item: GraphNode, nameList: string[]) => {
-      nameList.push(getNodeName(item.rawNode));
+    const tooto = (item: GraphNode, graphPath: GraphNode[]) => {
+      graphPath.push(item);
 
       if (item.children.size === 0) {
-        const pat = nameList.join('\n');
-        paths.push(pat);
-        // console.log(pat);
+        graphPathList.push(graphPath);
       }
 
-      // console.log(
-      //   first.rawNode.type,
-      //   getNodeName(first.rawNode)
-      // );
-
-      [...item.children].forEach((gph) => tooto(gph, [...nameList]));
+      [...item.children].forEach((gph) => tooto(gph, [...graphPath]));
     };
 
     tooto(mainGraphNode, []);
 
-    console.log('paths:', paths.length, 'unique:', new Set(paths).size);
+    const graphsToStr = (graphs: GraphNode[][]) =>
+      graphs.map((gp) => {
+        const getNodeName = (node: EveryNode) =>
+          `${'name' in node ? node.name : '-'} [${node.type}]`;
+
+        return `${gp
+          .map((child) => getNodeName(child.rawNode))
+          .join('\n')}\n\n`;
+      });
+
+    const filtered = graphPathList.filter((gp) => {
+      const mapped = gp.map((foo) => foo.rawNode);
+
+      const hasNamedUseContext = mapped.some(
+        (node) =>
+          node.type === 'import' &&
+          node.importType === 'named' &&
+          node.module === 'react' &&
+          node.name === 'useContext'
+      );
+
+      const hasDefaultUseContext = mapped.some(
+        (node) =>
+          node.type === 'import' &&
+          node.importType !== 'named' &&
+          node.module === 'react' &&
+          mapped.some(
+            (node2) =>
+              node2.type === 'fn' &&
+              node2.calls.includes(`${node.name}.useContext`)
+          )
+      );
+
+      // TODO check context passed to useContext + use of corresponding provider
+
+      return hasNamedUseContext || hasDefaultUseContext;
+    });
+
+    // console.log(...graphsToStr(graphPathList));
+
+    console.log('FOO', ...graphsToStr(filtered));
+
+    console.log('paths:', graphPathList.length, 'filtered:', filtered.length);
   });
 });

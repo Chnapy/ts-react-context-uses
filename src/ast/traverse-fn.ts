@@ -1,4 +1,4 @@
-import { Node, Project, SourceFile } from 'ts-morph';
+import { Node, SourceFile } from 'ts-morph';
 
 export type EveryNode = MyNode | ImportNode;
 
@@ -58,7 +58,6 @@ export type ImportNode = {
   importType: 'default' | 'namespace' | 'named';
   module: string;
   filePath: string | undefined;
-  sourceFile: SourceFile | undefined;
 };
 
 export type FileDeclarationMap = {
@@ -82,8 +81,8 @@ export type TreeContext = {
     jsxHistory: RenderNode[];
   };
   tree: CallRenderTree;
-  project: Pick<Project, 'getSourceFile'>;
   traverseNode: TraverseFn<Node>;
+  getSourceFile: (filePath: string) => SourceFile | undefined;
 };
 
 export type TraverseFn<N extends Node> = (

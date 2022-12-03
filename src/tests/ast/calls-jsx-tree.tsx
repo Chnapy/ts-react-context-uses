@@ -2,7 +2,7 @@
 import React, { useContext, useEffect } from 'react';
 import * as Foo from 'react';
 import { goo } from './foo';
-import { extra } from 'foobar';
+import { useExtra } from 'foobar';
 
 const useAction = () => {
   useSecond();
@@ -57,6 +57,7 @@ const Child: React.FC = () => {
   const value = useSecond();
   const foo = useFoo();
   const foo2 = useFoo2();
+  useExtra();
 
   return (
     <span>

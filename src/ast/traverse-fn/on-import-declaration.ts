@@ -4,7 +4,12 @@ import { TraverseFn, ImportNode } from './../traverse-fn';
 
 const resolve = (path: string): string | undefined => {
   try {
-    return require.resolve(path);
+    const resolvedPath = require.resolve(path);
+    if (resolvedPath.includes('/node_modules/')) {
+      return;
+    }
+
+    return resolvedPath;
   } catch {
     return undefined;
   }
@@ -14,7 +19,7 @@ export const onImportDeclaration: TraverseFn<ImportDeclaration> = (
   impDec,
   treeContext
 ) => {
-  const { currentNode, project, traverseNode } = treeContext;
+  const { currentNode, getSourceFile, traverseNode } = treeContext;
 
   if (currentNode.type !== 'file') {
     return;
@@ -33,7 +38,7 @@ export const onImportDeclaration: TraverseFn<ImportDeclaration> = (
   // sourceFile is undefined and not accessible
   // should run whole process on related tsconfig (with cache)
 
-  const sourceFile = filePath ? project.getSourceFile(filePath) : undefined;
+  const sourceFile = filePath ? getSourceFile(filePath) : undefined;
   if (sourceFile) {
     traverseNode(sourceFile, treeContext);
   }
@@ -44,7 +49,6 @@ export const onImportDeclaration: TraverseFn<ImportDeclaration> = (
     importType: 'default',
     module,
     filePath,
-    sourceFile,
   };
 
   const namespaceImportNode: ImportNode | undefined = namespaceImport && {
@@ -53,7 +57,6 @@ export const onImportDeclaration: TraverseFn<ImportDeclaration> = (
     importType: 'namespace',
     module,
     filePath,
-    sourceFile,
   };
 
   const namedImportNodes: ImportNode[] = namedImports.map((namedImport) => ({
@@ -62,7 +65,6 @@ export const onImportDeclaration: TraverseFn<ImportDeclaration> = (
     importType: 'named',
     module,
     filePath,
-    sourceFile,
   }));
 
   const importNodes = [

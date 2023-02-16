@@ -34,7 +34,7 @@ export const onJSXOpeningElement: TraverseFn<JsxOpeningElement> = (
     }
 
     if (currentNode.type === 'component') {
-      currentNode.render.push(node);
+      currentNode.children.push(node);
     } else if (currentNode.type === 'jsx') {
       currentNode.children.push(node);
     }

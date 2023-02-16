@@ -32,10 +32,11 @@ export const onJSXSelfClosingElement: TraverseFn<JsxSelfClosingElement> = (
     }
 
     switch (currentNode.type) {
+      case 'call':
       case 'fn':
       case 'variable':
       case 'component': {
-        currentNode.render.push(node);
+        currentNode.children.push(node);
 
         break;
       }

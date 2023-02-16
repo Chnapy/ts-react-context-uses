@@ -2,19 +2,26 @@ import { Node, SourceFile } from 'ts-morph';
 
 export type EveryNode = MyNode | ImportNode;
 
-export type MyNode = CallRenderTree | DeclarationNode | RenderNode;
+export type MyNode = CallRenderTree | DeclarationNode | RenderNode | CallNode;
+
+export type CallNode = {
+  name: string;
+  type: 'call';
+  args: string[];
+  children: (RenderNode | CallNode)[];
+};
 
 export type RenderJsxNode = {
   name: string;
   type: 'jsx';
-  children: RenderNode[];
+  children: (RenderNode | CallNode)[];
 };
 
 export type RenderExpressionNode = {
   type: 'jsx-expression';
   variables: string[];
-  calls: string[];
-  children: RenderNode[];
+  // calls: Call[];
+  children: (RenderNode | CallNode)[];
 };
 
 export type RenderNode = RenderJsxNode | RenderExpressionNode;
@@ -23,8 +30,8 @@ export type ComponentNode = {
   name: string;
   type: 'component';
   declarations: DeclarationMap;
-  calls: string[];
-  render: RenderNode[];
+  // calls: Call[];
+  children: (RenderNode | CallNode)[];
 };
 
 export type FnNode = {
@@ -32,16 +39,16 @@ export type FnNode = {
   type: 'fn';
   hook: boolean;
   declarations: DeclarationMap;
-  calls: string[];
-  render: RenderNode[];
+  // calls: Call[];
+  children: (RenderNode | CallNode)[];
 };
 
 export type VariableNode = {
   name: string;
   type: 'variable';
   declarations: DeclarationMap;
-  calls: string[];
-  render: RenderNode[];
+  // calls: Call[];
+  children: (RenderNode | CallNode | VariableNode)[];
 };
 
 export type FileNode = {

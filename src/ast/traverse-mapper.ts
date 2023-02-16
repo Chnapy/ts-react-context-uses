@@ -5,6 +5,7 @@ import { onJSXClosingElement } from './traverse-fn/on-jsx-closing-element';
 import { onJSXOpeningElement } from './traverse-fn/on-jsx-opening-element';
 import { onCallExpression } from './traverse-fn/on-call-expression';
 import { onVariableDeclaration } from './traverse-fn/on-variable-declaration';
+import { onPropertyAccessExpression } from './traverse-fn/on-property-access-expression';
 import { onSourceFile } from './traverse-fn/on-source-file';
 import { TraverseFn } from './traverse-fn';
 import { KindToNodeMappingsWithCommentStatements, SyntaxKind } from 'ts-morph';
@@ -23,4 +24,5 @@ export const traverseMapper: {
   [SyntaxKind.JsxOpeningElement]: onJSXOpeningElement,
   [SyntaxKind.JsxClosingElement]: onJSXClosingElement,
   [SyntaxKind.JsxSelfClosingElement]: onJSXSelfClosingElement,
+  [SyntaxKind.PropertyAccessExpression]: onPropertyAccessExpression,
 };

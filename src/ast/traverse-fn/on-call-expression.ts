@@ -1,5 +1,5 @@
-import { CallExpression } from 'ts-morph';
-import { TraverseFn } from './../traverse-fn';
+import { CallExpression, SyntaxKind } from 'ts-morph';
+import { TraverseFn, CallNode } from './../traverse-fn';
 
 export const onCallExpression: TraverseFn<CallExpression> = (
   callExp,
@@ -15,6 +15,26 @@ export const onCallExpression: TraverseFn<CallExpression> = (
     // TODO
     return;
   }
-
-  currentNode.calls.push(callExp.getExpression().getText());
+  if (callExp.getExpression().getText().includes('useContext')) {
+    console.log(
+      'FOO',
+      callExp
+        .getArguments()
+        .map((arg) => (arg.isKind(SyntaxKind.Identifier) ? arg.getText() : arg))
+    );
+  }
+  const node: CallNode = {
+    type: 'call',
+    name: callExp.getExpression().getText(),
+    args: callExp
+      .getArguments()
+      .map((arg) =>
+        arg.isKind(SyntaxKind.Identifier)
+          ? arg.getText()
+          : `-ignored-${arg.getKindName()}`
+      ),
+    children: [],
+  };
+  currentNode.children.push(node);
+  treeContext.currentNode = node;
 };

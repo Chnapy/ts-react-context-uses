@@ -57,8 +57,7 @@ export const onVariableDeclaration: TraverseFn<VariableDeclaration> = (
       type: 'fn',
       hook: true,
       declarations: {},
-      calls: [],
-      render: [],
+      children: [],
     };
     currentNode.declarations[node.name] = node;
     treeContext.currentNode = node;
@@ -67,8 +66,7 @@ export const onVariableDeclaration: TraverseFn<VariableDeclaration> = (
       name: varDec.getName(),
       type: 'component',
       declarations: {},
-      calls: [],
-      render: [],
+      children: [],
     };
     currentNode.declarations[node.name] = node;
     treeContext.currentNode = node;
@@ -78,12 +76,16 @@ export const onVariableDeclaration: TraverseFn<VariableDeclaration> = (
       type: 'fn',
       hook: false,
       declarations: {},
-      calls: [],
-      render: [],
+      children: [],
     };
     currentNode.declarations[node.name] = node;
     treeContext.currentNode = node;
   } else {
+    console.log(
+      'NNN',
+      varDec.getLastChild()?.getKindName(),
+      varDec.getLastChild()?.getFullText()
+    );
     const getNames = () => {
       const nameNode = varDec.getNameNode();
       if (nameNode.isKind(SyntaxKind.Identifier)) {
@@ -110,8 +112,7 @@ export const onVariableDeclaration: TraverseFn<VariableDeclaration> = (
         name,
         type: 'variable',
         declarations: {},
-        calls: [],
-        render: [],
+        children: [],
       })
     );
 

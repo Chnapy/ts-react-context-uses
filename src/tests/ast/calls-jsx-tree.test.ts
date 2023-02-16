@@ -1,7 +1,8 @@
+import { CallRenderTree, EveryNode, ImportNode } from './../../ast/traverse-fn';
+/* eslint-disable unicorn/consistent-destructuring */
 import { loadProjectFromPath } from './../../ast/load-project-from-path';
 import path from 'node:path';
 import { Project, SourceFile } from 'ts-morph';
-import { CallRenderTree, EveryNode } from './../../ast/traverse-fn';
 import { traverseSourceFiles } from './../../ast/traverse-source-files';
 
 describe('calls & jsx tree', () => {
@@ -104,8 +105,14 @@ describe('calls & jsx tree', () => {
               type: 'fn',
               hook: true,
               declarations: {},
-              calls: ['useSecond'],
-              render: [],
+              children: [
+                {
+                  type: 'call',
+                  name: 'useSecond',
+                  args: [],
+                  children: [],
+                },
+              ],
             },
             App: {
               name: 'App',
@@ -115,22 +122,33 @@ describe('calls & jsx tree', () => {
                   name: 'foo',
                   type: 'variable',
                   declarations: {},
-                  calls: ['React.useState'],
-                  render: [],
+                  children: [
+                    {
+                      type: 'call',
+                      name: 'React.useState',
+                      args: expect.any(Array) as string[],
+                      children: [],
+                    },
+                  ],
                 },
                 bar: {
                   name: 'bar',
                   type: 'variable',
                   declarations: {},
-                  calls: ['useAction'],
-                  render: [],
+                  children: [
+                    {
+                      type: 'call',
+                      name: 'useAction',
+                      args: [],
+                      children: [],
+                    },
+                  ],
                 },
                 child: {
                   name: 'child',
                   type: 'variable',
                   declarations: {},
-                  calls: [],
-                  render: [
+                  children: [
                     {
                       name: 'Child',
                       type: 'jsx',
@@ -143,8 +161,7 @@ describe('calls & jsx tree', () => {
                   type: 'fn',
                   hook: false,
                   declarations: {},
-                  calls: [],
-                  render: [
+                  children: [
                     {
                       name: 'Child',
                       type: 'jsx',
@@ -153,27 +170,36 @@ describe('calls & jsx tree', () => {
                   ],
                 },
               },
-              calls: ['useEffect', 'console.log', 'childFn'],
-              render: [
+              children: [
+                {
+                  type: 'call',
+                  name: 'useEffect',
+                  args: expect.any(Array) as string[],
+                  children: [
+                    {
+                      type: 'call',
+                      name: 'console.log',
+                      args: ['foo'],
+                      children: [],
+                    },
+                  ],
+                },
                 {
                   name: 'FooProvider',
                   type: 'jsx',
                   children: [
                     {
                       type: 'jsx-expression',
-                      calls: [],
                       variables: [],
                       children: [],
                     },
                     {
                       type: 'jsx-expression',
-                      calls: [],
                       variables: ['bar'],
                       children: [],
                     },
                     {
                       type: 'jsx-expression',
-                      calls: [],
                       variables: ['foo'],
                       children: [],
                     },
@@ -196,7 +222,6 @@ describe('calls & jsx tree', () => {
                     },
                     {
                       type: 'jsx-expression',
-                      calls: [],
                       variables: ['child'],
                       children: [],
                     },
@@ -204,59 +229,92 @@ describe('calls & jsx tree', () => {
                 },
                 {
                   type: 'jsx-expression',
-                  calls: ['childFn'],
                   variables: [],
+                  children: [
+                    {
+                      type: 'call',
+                      name: 'childFn',
+                      args: [],
+                      children: [],
+                    },
+                  ],
+                },
+                {
+                  type: 'call',
+                  name: 'childFn',
+                  args: [],
                   children: [],
                 },
               ],
             },
             useFoo: {
-              calls: ['React.useContext'],
               declarations: {},
               name: 'useFoo',
               type: 'fn',
               hook: true,
-              render: [],
+              children: [
+                {
+                  type: 'call',
+                  name: 'React.useContext',
+                  args: ['FooContext'],
+                  children: [],
+                },
+              ],
             },
             useFoo2: {
-              calls: ['useContext'],
               declarations: {},
               name: 'useFoo2',
               type: 'fn',
               hook: true,
-              render: [],
+              children: [
+                {
+                  type: 'call',
+                  name: 'useContext',
+                  args: ['FooContext'],
+                  children: [],
+                },
+              ],
             },
             useSecond: {
               name: 'useSecond',
               type: 'fn',
               hook: true,
               declarations: {},
-              calls: [],
-              render: [],
+              children: [],
             },
             FooContext: {
-              calls: ['React.createContext'],
               declarations: {},
               name: 'FooContext',
               type: 'variable',
-              render: [],
+              children: [
+                {
+                  type: 'call',
+                  name: 'React.createContext',
+                  args: expect.any(Array) as string[],
+                  children: [],
+                },
+              ],
             },
             FooProvider: {
-              calls: [],
               declarations: {},
               name: 'FooProvider',
               type: 'variable',
-              render: [],
+              children: [
+                {
+                  type: 'variable',
+                  name: 'FooContext.Provider',
+                  declarations: {},
+                  children: [],
+                },
+              ],
             },
             Parent: {
               name: 'Parent',
               type: 'component',
               declarations: {},
-              calls: [],
-              render: [
+              children: [
                 {
                   type: 'jsx-expression',
-                  calls: [],
                   variables: ['children'],
                   children: [],
                 },
@@ -269,42 +327,62 @@ describe('calls & jsx tree', () => {
                 foo: {
                   name: 'foo',
                   type: 'variable',
-                  calls: ['useFoo'],
                   declarations: {},
-                  render: [],
+                  children: [
+                    {
+                      type: 'call',
+                      name: 'useFoo',
+                      args: [],
+                      children: [],
+                    },
+                  ],
                 },
                 foo2: {
                   name: 'foo2',
                   type: 'variable',
-                  calls: ['useFoo2'],
                   declarations: {},
-                  render: [],
+                  children: [
+                    {
+                      type: 'call',
+                      name: 'useFoo2',
+                      args: [],
+                      children: [],
+                    },
+                  ],
                 },
                 value: {
                   name: 'value',
                   type: 'variable',
-                  calls: ['useSecond'],
                   declarations: {},
-                  render: [],
+                  children: [
+                    {
+                      type: 'call',
+                      name: 'useSecond',
+                      args: [],
+                      children: [],
+                    },
+                  ],
                 },
               },
-              calls: ['useExtra'],
-              render: [
+              children: [
+                {
+                  type: 'call',
+                  name: 'useExtra',
+                  args: [],
+                  children: [],
+                },
                 {
                   type: 'jsx-expression',
-                  calls: [],
                   variables: ['value'],
                   children: [],
                 },
                 {
                   type: 'jsx-expression',
-                  calls: [],
                   variables: ['foo'],
                   children: [],
                 },
                 {
                   type: 'jsx-expression',
-                  calls: [],
                   variables: ['foo2'],
                   children: [],
                 },
@@ -319,9 +397,8 @@ describe('calls & jsx tree', () => {
             goo: {
               name: 'goo',
               type: 'variable',
-              calls: [],
               declarations: {},
-              render: [],
+              children: [],
             },
           },
         },
@@ -334,9 +411,8 @@ describe('calls & jsx tree', () => {
                 name: 'useExtra',
                 type: 'fn',
                 hook: true,
-                calls: [],
                 declarations: {},
-                render: [],
+                children: [],
               },
             },
           },
@@ -361,34 +437,45 @@ describe('calls & jsx tree', () => {
       const { rawNode, parents } = graphNode;
 
       if (nameSearching.includes('.')) {
-        console.log(
-          'TOTOTO',
-          nameSearching,
-          graphNode.rawNode.type,
-          findDeclaration(graphNode, nameSearching.split('.')[0])
-        );
+        // console.log(
+        //   'TOTOTO',
+        //   nameSearching,
+        //   rawNode.type,
+        //   findDeclaration(graphNode, nameSearching.split('.')[0])
+        // );
+        // eslint-disable-next-line unicorn/no-lonely-if
         if (findDeclaration(graphNode, nameSearching.split('.')[0])) {
           return findDeclaration(graphNode, nameSearching.split('.')[0]);
         }
       }
 
-      const foundNode =
-        'declarations' in rawNode && rawNode.declarations[nameSearching];
-      if (foundNode) {
-        if (nameSearching === 'useContext') {
-          // console.log('ENDUP HERE');
+      const searchForNode = () => {
+        const foundNode =
+          'declarations' in rawNode && rawNode.declarations[nameSearching];
+        if (foundNode) {
+          if (nameSearching === 'FooProvider') {
+            console.log('ENDUP HERE');
+            console.log('FOUND', nameSearching, foundNode);
+          }
           // console.log('FOUND', nameSearching, foundNode);
+          return foundNode;
         }
-        // console.log('FOUND', nameSearching, foundNode);
-        return foundNode;
-      }
 
-      for (const parent of parents) {
-        const node = findDeclaration(parent, nameSearching);
-        if (node) {
-          return node;
+        for (const parent of parents) {
+          const node = findDeclaration(parent, nameSearching);
+          if (node) {
+            return node;
+          }
         }
-      }
+      };
+
+      const node = searchForNode();
+
+      // if (node?.type === 'variable' && node.children[0]?.type === 'variable') {
+      //   node = node.children[0];
+      // }
+
+      return node;
     };
 
     const toto = new Map<EveryNode, GraphNode>();
@@ -426,32 +513,78 @@ describe('calls & jsx tree', () => {
 
           break;
         }
+        case 'call': {
+          const callNode = findDeclaration(graphNode, node.name);
+          if (callNode) {
+            traverse(callNode, graphNode);
+            // if (callNode.name === 'useContext') {
+            //   console.log('FOFOFOFO', callNode.type, graphNode.children);
+            // }
+            // graphNode.children.add(callNode);
+          }
+
+          Object.values(node.children).forEach((nod) =>
+            traverse(nod, graphNode)
+          );
+          break;
+        }
         case 'component':
         case 'fn':
         case 'variable': {
+          const nameSplited = node.name.split('.');
+          const isProvider = nameSplited[1] === 'Provider';
+
+          // if (
+          //   node.children.length > 0 &&
+          //   node.children[0].type === 'variable'
+          // ) {
+          //   node = node.children[0];
+          //   graphNode.rawNode = node;
+          //   toto.set(node, graphNode);
+          // }
+
+          // if (isProvider) {
+          //   const callNode = findDeclaration(graphNode, nameSplited[0]);
+          //   if (callNode) {
+          //     traverse(callNode, graphNode);
+          //     // graphNode.children.add(callNode);
+          //   }
+          // }
+
           Object.values(node.declarations).forEach(
             (decNode) => decNode && traverse(decNode, graphNode)
           );
 
-          Object.values(node.render).forEach((nod) => traverse(nod, graphNode));
+          Object.values(node.children).forEach((nod) =>
+            traverse(nod, graphNode)
+          );
+          // }
 
-          node.calls.forEach((callStr) => {
-            const callNode = findDeclaration(graphNode, callStr);
-            if (callNode) {
-              traverse(callNode, graphNode);
-              // if (callNode.name === 'useContext') {
-              //   console.log('FOFOFOFO', callNode.type, graphNode.children);
-              // }
-              // graphNode.children.add(callNode);
-            }
-          });
+          // node.calls.forEach((call) => {
+          //   const callNode = findDeclaration(graphNode, call.fn);
+          //   if (callNode) {
+          //     traverse(callNode, graphNode);
+          //     // if (callNode.name === 'useContext') {
+          //     //   console.log('FOFOFOFO', callNode.type, graphNode.children);
+          //     // }
+          //     // graphNode.children.add(callNode);
+          //   }
+          // });
 
           break;
         }
         case 'jsx': {
           const callNode = findDeclaration(graphNode, node.name);
+          if (node.name === 'FooProvider') {
+            console.log('TUTU', callNode?.type, callNode?.name);
+          }
           if (callNode) {
             traverse(callNode, graphNode);
+            // toto.delete(node);
+            // graphNode = [...graphNode.children][0] ?? graphNode;
+            // toto.set(node, graphNode);
+            // node = graphNode.rawNode;
+            // toto.set(node, graphNode);
             // graphNode.children.add(callNode);
           }
 
@@ -466,13 +599,13 @@ describe('calls & jsx tree', () => {
             traverse(nod, graphNode)
           );
 
-          node.calls.forEach((callStr) => {
-            const callNode = findDeclaration(graphNode, callStr);
-            if (callNode) {
-              traverse(callNode, graphNode);
-              // graphNode.children.add(callNode);
-            }
-          });
+          // node.calls.forEach((call) => {
+          //   const callNode = findDeclaration(graphNode, call.fn);
+          //   if (callNode) {
+          //     traverse(callNode, graphNode);
+          //     // graphNode.children.add(callNode);
+          //   }
+          // });
 
           node.variables.forEach((varStr) => {
             const varNode = findDeclaration(graphNode, varStr);
@@ -529,34 +662,74 @@ describe('calls & jsx tree', () => {
     const filtered = graphPathList.filter((gp) => {
       const mapped = gp.map((foo) => foo.rawNode);
 
-      const hasNamedUseContext = mapped.some(
-        (node) =>
-          node.type === 'import' &&
-          node.importType === 'named' &&
-          node.module === 'react' &&
-          node.name === 'useContext'
-      );
+      const hasNamedUseContext =
+        mapped.some(
+          (node) =>
+            node.type === 'import' &&
+            node.importType === 'named' &&
+            node.module === 'react' &&
+            node.name === 'useContext'
+        ) &&
+        mapped.some(
+          (node2) => node2.type === 'call' && node2.name === 'useContext'
+        ) &&
+        mapped.some(
+          (node2) =>
+            node2.type === 'call' && node2.name.includes('createContext')
+        );
 
-      const hasDefaultUseContext = mapped.some(
-        (node) =>
+      const reactName = mapped.find(
+        (node): node is ImportNode =>
           node.type === 'import' &&
           node.importType !== 'named' &&
-          node.module === 'react' &&
-          mapped.some(
-            (node2) =>
-              node2.type === 'fn' &&
-              node2.calls.includes(`${node.name}.useContext`)
-          )
-      );
+          node.module === 'react'
+      )?.name;
+
+      const hasDefaultUseContext =
+        !!reactName &&
+        mapped.some(
+          (node2) =>
+            node2.type === 'call' && node2.name === `${reactName}.useContext`
+        ) &&
+        mapped.some(
+          (node2) =>
+            node2.type === 'call' && node2.name.includes('createContext')
+        );
+      // mapped.some(
+      //   (node) =>
+      //     node.type === 'import' &&
+      //     node.importType !== 'named' &&
+      //     node.module === 'react' &&
+      //     mapped.some(
+      //       (node2) =>
+      //         node2.type === 'fn' &&
+      //         node2.children.some(
+      //           (child) =>
+      //             child.type === 'call' &&
+      //             child.name === `${node.name}.useContext`
+      //         )
+      //     )
+      // ) &&
+      // mapped.some(
+      //   (node2) => node2.type === 'call' && node2.name === node.name
+      // );
 
       // TODO check context passed to useContext + use of corresponding provider
 
       return hasNamedUseContext || hasDefaultUseContext;
     });
 
-    // console.log(...graphsToStr(graphPathList));
+    const otherFiltered = graphPathList.filter((list) =>
+      list
+        .map((totoo) => totoo.rawNode)
+        .some((totoo) => totoo.type === 'jsx' && totoo.name === 'FooProvider')
+    );
 
-    console.log('FOO', ...graphsToStr(filtered));
+    console.log(...graphsToStr(graphPathList));
+
+    // console.log('FOO', ...graphsToStr(filtered));
+
+    console.log('FOO-2', ...graphsToStr(otherFiltered));
 
     console.log('paths:', graphPathList.length, 'filtered:', filtered.length);
   });

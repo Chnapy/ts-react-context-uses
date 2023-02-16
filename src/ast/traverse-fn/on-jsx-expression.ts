@@ -1,6 +1,6 @@
 import { ArrayUtils } from './../../utils/array-utils';
 import { JsxExpression, SyntaxKind } from 'ts-morph';
-import { TraverseFn, RenderExpressionNode } from './../traverse-fn';
+import { TraverseFn, RenderExpressionNode, CallNode } from './../traverse-fn';
 
 export const onJSXExpression: TraverseFn<JsxExpression> = (
   jsx,
@@ -18,9 +18,22 @@ export const onJSXExpression: TraverseFn<JsxExpression> = (
     return [];
   };
 
-  const getCalls = () => {
+  const getCalls = (): CallNode[] => {
     if (expr?.isKind(SyntaxKind.CallExpression)) {
-      return [expr.getExpression().getText()];
+      return [
+        {
+          type: 'call',
+          name: expr.getExpression().getText(),
+          args: expr
+            .getArguments()
+            .map((arg) =>
+              arg.isKind(SyntaxKind.Identifier)
+                ? arg.getText()
+                : `-ignored-${arg.getKindName()}`
+            ),
+          children: [],
+        },
+      ];
     }
 
     return [];
@@ -28,9 +41,9 @@ export const onJSXExpression: TraverseFn<JsxExpression> = (
 
   const node: RenderExpressionNode = {
     type: 'jsx-expression',
-    calls: getCalls(),
+    // calls: getCalls(),
     variables: getVariables(),
-    children: [],
+    children: [...getCalls()],
   };
 
   const currentJsx = ArrayUtils.last(jsxContext.jsxHistory);
@@ -43,10 +56,11 @@ export const onJSXExpression: TraverseFn<JsxExpression> = (
     }
 
     switch (currentNode.type) {
+      case 'call':
       case 'fn':
       case 'variable':
       case 'component': {
-        currentNode.render.push(node);
+        currentNode.children.push(node);
 
         break;
       }

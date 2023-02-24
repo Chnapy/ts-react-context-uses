@@ -12,5 +12,10 @@
       }
     ]
   },
-  "include": ["."]
+  "include": ["."],
+  "references": [
+    {
+      "path": "../extra"
+    }
+  ]
 }

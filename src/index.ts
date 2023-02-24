@@ -1,3 +1,2 @@
-import { init } from './plugin';
-
-module.exports = init;
+export * from './main';
+export * from './bin';

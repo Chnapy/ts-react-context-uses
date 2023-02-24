@@ -124,7 +124,11 @@ const config = {
     es6: true,
   },
   parserOptions: {
-    project: ['./tsconfig.json', './example/tsconfig.json'],
+    project: [
+      './tsconfig.json',
+      './example/tsconfig.json',
+      './extra/tsconfig.json',
+    ],
     tsconfigRootDir: '.',
     sourceType: 'module',
     ecmaVersion: 8, // to enable features such as async/await

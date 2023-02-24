@@ -6,5 +6,5 @@
     "tsBuildInfoFile": "./node_modules/.cache/.tsbuildinfo",
     "outDir": "./node_modules/.cache/dist"
   },
-  "include": ["src", "benchmark", "./*.js", "./*.ts", ".eslintrc.js"]
+  "include": ["src", "./*.js", "./*.ts", ".eslintrc.js"]
 }

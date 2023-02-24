@@ -19,5 +19,5 @@
     "module": "commonjs",
     "lib": ["ESNext", "dom"]
   },
-  "include": ["./index.ts"]
+  "include": ["."]
 }

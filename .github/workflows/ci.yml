@@ -33,6 +33,3 @@ jobs:
 
       - name: Build
         run: yarn build
-
-      - name: Check - Example type
-        run: yarn c:type ./example

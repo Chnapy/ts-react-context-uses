@@ -1,6 +1,5 @@
 export const ArrayUtils = {
-  first: <I>(arr: I[]): I | undefined => arr[0],
-  last: <I>(arr: I[]): I | undefined => arr[arr.length - 1],
-  filterNonNullable: <I>(item: I): item is NonNullable<I> =>
-    item !== undefined && item !== null,
+  first: <I>(arr: I[]) => ArrayUtils.getItem(arr, 0),
+  last: <I>(arr: I[]) => ArrayUtils.getItem(arr, arr.length - 1),
+  getItem: <I>(arr: I[], index: number): I | undefined => arr[index],
 };
